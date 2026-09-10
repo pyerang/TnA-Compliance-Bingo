@@ -194,11 +194,11 @@
       <div id="eligibility"></div>
 
       <div class="actions" id="submitActions">
-        <button class="primary" id="mailBtn">이벤트 참여 메일 보내기</button>
+        <button class="primary" id="mailBtn">🎁 이벤트 추첨 참여하기</button>
       </div>
       <div id="mailInfo" style="margin-top:14px;padding:14px 16px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.6;font-size:13px;color:#475569;">
-        결과가 2 BINGO 이상이면 참여 인증 메일을 보낼 수 있습니다.<br>
-        버튼을 누르면 메일 앱이 열리고 이름·부서·BINGO 결과가 자동으로 입력됩니다.
+        2 BINGO 이상이면 이벤트 추첨에 참여할 수 있습니다.<br>
+        버튼을 누르면 메일 앱이 열립니다. 메일 앱에서 <b>[보내기]</b>를 누르면 참여가 완료됩니다.
       </div>
       <div id="submitComplete" style="display:none;margin-top:16px;padding:18px;border-radius:14px;background:#ecfdf5;border:1px solid #bbf7d0;text-align:center;line-height:1.6;">
         <b>✅ 메일 작성 화면을 열었습니다.</b><br>
@@ -324,19 +324,19 @@ function renderResult(){
   bingoCountEl.textContent = `${count} BINGO`;
 
   if (count <= 1){
-    resultCopy.innerHTML = `🌱 <b>${count} BINGO</b><br><br>나의 컴플라이언스 실천을 확인했어요!<br>앞으로 더 다양한 실천에도 도전해 보세요 😊`;
+    resultCopy.innerHTML = `🌱 <b>${count} BINGO</b><br><br>나의 컴플라이언스 실천을 확인했어요!<br><br>앞으로 더 다양한 실천에도 도전해 보세요 😊`;
     eligibility.innerHTML = `<div class="not-eligible">이번 결과는 <b>${count} BINGO</b>입니다.<br>2 BINGO 이상부터 이벤트 추첨 대상이 됩니다.</div>`;
     document.getElementById("submitActions").style.display = "none";
     document.getElementById("mailInfo").style.display = "none";
   } else if (count === 2){
     document.getElementById("submitActions").style.display = "flex";
     document.getElementById("mailInfo").style.display = "block";
-    resultCopy.innerHTML = `🎉 <b>2 BINGO</b><br><br><b>축하합니다! 이벤트 추첨 대상입니다 🎁</b><br>지금의 좋은 실천을 앞으로도 꾸준히 이어가 주세요!`;
+    resultCopy.innerHTML = `🎉 <b>2 BINGO</b><br><br><b>축하합니다! 이벤트 추첨 대상입니다 🎁</b><br><br>지금의 좋은 실천을 앞으로도 꾸준히 이어가 주세요!`;
     eligibility.innerHTML = `<div class="eligible">🎁 <b>이벤트 추첨 대상입니다.</b><br>2 BINGO 달성 기준을 충족했습니다.</div>`;
   } else {
     document.getElementById("submitActions").style.display = "flex";
     document.getElementById("mailInfo").style.display = "block";
-    resultCopy.innerHTML = `✨ <b>${count} BINGO</b><br><br><b>멋져요! 이벤트 추첨 대상입니다 🎁</b><br>다양한 컴플라이언스 실천이 BINGO로 이어졌어요.<br>앞으로도 좋은 실천을 계속 이어가 주세요 😊`;
+    resultCopy.innerHTML = `✨ <b>${count} BINGO 이상</b><br><br><b>멋져요! 이벤트 추첨 대상입니다 🎁</b><br><br>다양한 컴플라이언스 실천이 BINGO로 이어졌어요.<br><br>앞으로도 좋은 실천을 계속 이어가 주세요 😊`;
     eligibility.innerHTML = `<div class="eligible">🎁 <b>이벤트 추첨 대상입니다.</b><br>${count} BINGO를 달성했습니다.</div>`;
   }
 
