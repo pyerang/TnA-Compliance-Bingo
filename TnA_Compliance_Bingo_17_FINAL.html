@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>T&A COMPLIANCE BINGO</title>
+<style>
+  :root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --text:#18212f;
+    --muted:#6b7280;
+    --line:#dbe2ea;
+    --primary:#1f6f5f;
+    --primary-2:#2f8d79;
+    --soft:#eaf5f1;
+    --accent:#f2b84b;
+    --danger:#c2410c;
+    --shadow:0 10px 30px rgba(24,33,47,.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Pretendard","Apple SD Gothic Neo","Noto Sans KR",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:24px 16px 56px}
+  .hero{
+    background:linear-gradient(135deg,var(--primary),#274f7a);
+    color:#fff;
+    border-radius:24px;
+    padding:28px 24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+  .eyebrow{font-size:12px;letter-spacing:.08em;font-weight:700;opacity:.85}
+  h1{font-size:30px;line-height:1.15;margin:8px 0 10px}
+  .hero p{margin:0;line-height:1.6;opacity:.94}
+  .card{
+    background:var(--card);
+    border:1px solid #edf0f4;
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    padding:22px;
+    margin-top:16px;
+  }
+  .section-title{font-size:18px;font-weight:800;margin:0 0 8px}
+  .help{font-size:14px;color:var(--muted);line-height:1.55;margin:0 0 16px}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+  input{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 13px;
+    font-size:15px;
+    outline:none;
+    background:#fff;
+  }
+  input:focus{border-color:var(--primary-2);box-shadow:0 0 0 3px rgba(47,141,121,.12)}
+  .counter-row{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    position:sticky;top:0;z-index:5;
+    background:rgba(246,248,251,.94);
+    backdrop-filter: blur(10px);
+    padding:10px 0 12px;
+    margin-top:4px;
+  }
+  .counter{font-size:16px;font-weight:900;color:var(--primary)}
+  .tiny{font-size:12px;color:var(--muted)}
+  .checklist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .item{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:13px 13px;
+    display:flex;gap:10px;align-items:flex-start;
+    cursor:pointer;transition:.16s ease;
+    background:#fff;
+    min-height:74px;
+  }
+  .item:hover{border-color:#bdc9d6;transform:translateY(-1px)}
+  .item.selected{border-color:var(--primary-2);background:var(--soft)}
+  .item.disabled{opacity:.48;cursor:not-allowed;transform:none}
+  .box{
+    width:22px;height:22px;border:2px solid #b8c2cc;border-radius:6px;
+    flex:none;margin-top:1px;display:grid;place-items:center;font-size:14px;font-weight:900;color:#fff;
+  }
+  .item.selected .box{background:var(--primary);border-color:var(--primary)}
+  .item-text{font-size:14px;line-height:1.45;font-weight:650}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  button{
+    border:0;border-radius:12px;padding:13px 18px;font-size:15px;font-weight:800;cursor:pointer;
+  }
+  .primary{background:var(--primary);color:#fff;flex:1;min-width:220px}
+  .primary:disabled{background:#aeb8c2;cursor:not-allowed}
+  .secondary{background:#eef2f6;color:#334155}
+  .result{display:none}
+  .result.show{display:block}
+  .result-head{text-align:center;padding:8px 0 4px}
+  .result-badge{
+    display:inline-block;background:#fff4d8;color:#8b5b00;border:1px solid #f6d37b;
+    font-weight:900;padding:7px 11px;border-radius:999px;font-size:13px
+  }
+  .bingo-count{font-size:34px;font-weight:950;margin:10px 0 6px;color:var(--primary)}
+  .result-copy{font-size:15px;line-height:1.6;color:#4b5563}
+  .grid-wrap{overflow:visible;margin-top:16px}
+  .bingo-grid{
+    display:grid;grid-template-columns:repeat(5,1fr);
+    gap:6px;width:100%;
+  }
+  .cell{
+    aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;
+    padding:6px;display:flex;align-items:center;justify-content:center;
+    text-align:center;font-size:11px;line-height:1.25;font-weight:750;background:#f8fafc;
+    position:relative;word-break:keep-all;overflow:hidden;
+  }
+  .cell.on{background:var(--soft);border-color:var(--primary-2);color:#174c42}
+  .cell.bonus{background:#fff7e6;border-color:#f3c96e;color:#815d11}
+  .cell .mark{
+    position:absolute;right:8px;top:7px;font-size:14px;font-weight:950
+  }
+  .eligible{
+    margin-top:16px;padding:14px 16px;border-radius:14px;background:#ecfdf5;color:#166534;
+    border:1px solid #bbf7d0;font-weight:800;line-height:1.5;
+  }
+  .not-eligible{
+    margin-top:16px;padding:14px 16px;border-radius:14px;background:#fff7ed;color:#9a3412;
+    border:1px solid #fed7aa;font-weight:800;line-height:1.5;
+  }
+  .footnote{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}
+  @media (max-width:680px){
+    .fields,.checklist{grid-template-columns:1fr}
+    h1{font-size:25px}
+    .hero{padding:22px 18px}
+    .card{padding:16px}
+    .item{min-height:0}
+    .bingo-grid{gap:4px}
+    .cell{
+      font-size:9.5px;
+      line-height:1.16;
+      padding:4px;
+      border-radius:8px;
+    }
+    .cell .mark{
+      right:4px;
+      top:3px;
+      font-size:11px;
+    }
+    .bingo-count{font-size:30px}
+    .result-copy{font-size:14px}
+  }
+
+  @media (max-width:390px){
+    .wrap{padding-left:10px;padding-right:10px}
+    .card{padding:12px}
+    .cell{
+      font-size:8.6px;
+      padding:3px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">T&A · COMPLIANCE CAMPAIGN</div>
+      <h1>나의 COMPLIANCE 실천력은?</h1>
+      <p>평소 업무에서 내가 잘 실천하고 있다고 생각하는 <b>17가지</b>를 선택해 주세요.<br>
+      선택을 완료하면 숨겨져 있던 나의 BINGO 결과가 공개됩니다.</p>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">참여 정보</h2>
+      <p class="help">이름·부서 입력 후 실천항목 17개를 선택해 참여합니다. 결과 확인 후에는 선택을 변경할 수 없으며, 2 BINGO 이상이면 참여 인증 메일을 보낼 수 있습니다.</p>
+      <div class="fields">
+        <div>
+          <label for="name">이름</label>
+          <input id="name" placeholder="이름 입력" autocomplete="name" />
+        </div>
+        <div>
+          <label for="dept">부서</label>
+          <input id="dept" placeholder="부서 입력" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="selectCard">
+      <h2 class="section-title">실천항목 선택</h2>
+      <p class="help">아래 24개 중 <b>정확히 17개</b>를 선택해 주세요. 빙고판의 실제 위치는 결과 확인 전까지 공개되지 않습니다.</p>
+
+      <div class="counter-row">
+        <div>
+          <div class="counter"><span id="count">0</span> / 17 선택</div>
+          <div class="tiny">17개 선택 시 결과 확인 버튼이 활성화됩니다.</div>
+        </div>
+      </div>
+
+      <div class="checklist" id="checklist"></div>
+
+      <div class="actions">
+        <button class="primary" id="resultBtn" disabled>나의 BINGO 결과 확인하기</button>
+      </div>
+    </section>
+
+    <section class="card result" id="resultCard">
+      <div class="result-head">
+        <span class="result-badge">T&A COMPLIANCE BINGO</span>
+        <div class="bingo-count" id="bingoCount">0 BINGO</div>
+        <div class="result-copy" id="resultCopy"></div>
+      </div>
+
+      <div class="grid-wrap">
+        <div class="bingo-grid" id="bingoGrid"></div>
+      </div>
+
+      <div id="eligibility"></div>
+
+      <div style="margin-top:14px;padding:12px 14px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;text-align:center;font-size:13px;line-height:1.5;color:#475569;">
+        📱 <b>최종 BINGO 결과 화면을 캡처해서 보관해 주세요.</b><br>
+        모바일에서는 5×5 빙고판이 한 화면에 보이도록 축소 표시됩니다.
+      </div>
+
+      <div class="actions" id="submitActions">
+        <button class="primary" id="mailBtn">🎁 이벤트 추첨 참여하기</button>
+      </div>
+      <div id="mailInfo" style="margin-top:14px;padding:14px 16px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.6;font-size:13px;color:#475569;">
+        2 BINGO 이상이면 이벤트 추첨에 참여할 수 있습니다.<br>
+        버튼을 누르면 메일 앱이 열립니다. 메일 앱에서 <b>[보내기]</b>를 누르면 참여가 완료됩니다.
+      </div>
+      <div id="submitComplete" style="display:none;margin-top:16px;padding:18px;border-radius:14px;background:#ecfdf5;border:1px solid #bbf7d0;text-align:center;line-height:1.6;">
+        <b>✅ 메일 작성 화면을 열었습니다.</b><br>
+        메일 앱에서 <b>보내기</b>를 눌러야 최종 참여가 완료됩니다.
+      </div>
+
+      <div class="footnote">
+        가운데 BONUS 칸은 자동으로 체크됩니다. BINGO는 가로 5줄, 세로 5줄, 대각선 2줄을 기준으로 계산합니다. 결과 확인 후에는 선택을 변경할 수 없습니다.
+      </div>
+    </section>
+  </div>
+
+<script>
+// 실제 운영 전에 아래 이메일 주소만 담당자 메일로 바꿔주세요.
+const ADMIN_EMAIL = "yerang.park@cj.net";
+
+const boardItems = [
+  {id:"mail", text:"📧 메일 발송 전 수신자·첨부파일 확인"},
+  {id:"partner", text:"🤝 협력사와 공정하게 소통"},
+  {id:"lock", text:"🔒 자리 비울 때 화면 잠금"},
+  {id:"gift", text:"🎁 금품·선물·접대 전 관련 기준 확인"},
+  {id:"copyright", text:"📸 이미지·영상 사용 전 저작권 확인"},
+
+  {id:"safety", text:"🦺 현장에서 안전수칙 준수"},
+  {id:"external", text:"📤 외부 공유 전 보안 여부 확인"},
+  {id:"contract", text:"📝 계약·발주 시 정해진 절차 준수"},
+  {id:"ai", text:"🤖 생성형 AI에 회사 기밀정보 입력 금지"},
+  {id:"privacy", text:"👤 개인정보는 필요한 범위에서만 사용"},
+
+  {id:"conflict", text:"⚖️ 이해관계 발생 시 먼저 알리기"},
+  {id:"expense", text:"💳 비용 처리 시 증빙·사용목적 확인"},
+  {id:"bonus", text:"⭐ 오늘도 준법! BONUS", bonus:true},
+  {id:"password", text:"🔑 ID·비밀번호 타인과 공유 금지"},
+  {id:"respect", text:"💬 동료·협력사에게 존중하는 언어 사용"},
+
+  {id:"personal", text:"📁 업무자료 개인 계정에 저장하지 않기"},
+  {id:"approval", text:"✅ 필요한 업무는 사전승인 후 진행"},
+  {id:"phishing", text:"🔗 의심스러운 메일·링크 열지 않기"},
+  {id:"asset", text:"🏢 회사 자산은 업무 목적에 맞게 사용"},
+  {id:"record", text:"📑 중요 업무 결정·협의는 기록 남기기"},
+
+  {id:"improper", text:"🙅 부당한 요청에 원칙대로 대응"},
+  {id:"guide", text:"🔍 업무가 애매하면 규정·가이드 확인"},
+  {id:"secure", text:"🔐 중요 문서·자료 방치하지 않기"},
+  {id:"speak", text:"👀 위반 가능성을 그냥 지나치지 않기"},
+  {id:"report", text:"📢 필요 시 제보·상담채널 활용"}
+];
+
+const listOrder = [
+  "expense","phishing","partner","copyright","guide","lock",
+  "approval","privacy","safety","record","gift","personal",
+  "contract","respect","external","password","mail","ai",
+  "asset","conflict","secure","report","improper","speak"
+];
+
+const itemMap = Object.fromEntries(boardItems.map(x => [x.id, x]));
+let selected = new Set();
+
+const checklist = document.getElementById("checklist");
+const countEl = document.getElementById("count");
+const resultBtn = document.getElementById("resultBtn");
+const resultCard = document.getElementById("resultCard");
+const selectCard = document.getElementById("selectCard");
+const bingoGrid = document.getElementById("bingoGrid");
+const bingoCountEl = document.getElementById("bingoCount");
+const resultCopy = document.getElementById("resultCopy");
+const eligibility = document.getElementById("eligibility");
+
+function renderChecklist(){
+  checklist.innerHTML = "";
+  listOrder.forEach(id => {
+    const item = itemMap[id];
+    const div = document.createElement("div");
+    div.className = "item" + (selected.has(id) ? " selected" : "");
+    if (selected.size >= 17 && !selected.has(id)) div.classList.add("disabled");
+    div.innerHTML = `
+      <div class="box">${selected.has(id) ? "✓" : ""}</div>
+      <div class="item-text">${item.text}</div>
+    `;
+    div.addEventListener("click", () => {
+      if (selected.has(id)) {
+        selected.delete(id);
+      } else {
+        if (selected.size >= 17) return;
+        selected.add(id);
+      }
+      update();
+    });
+    checklist.appendChild(div);
+  });
+}
+
+function update(){
+  countEl.textContent = selected.size;
+  resultBtn.disabled = selected.size !== 17;
+  renderChecklist();
+}
+
+function calculateBingo(){
+  // 5x5 board indices 0..24, center index 12 is bonus.
+  const on = boardItems.map((item, idx) => item.bonus || selected.has(item.id));
+  const lines = [];
+
+  for (let r=0; r<5; r++) lines.push([0,1,2,3,4].map(c => r*5+c));
+  for (let c=0; c<5; c++) lines.push([0,1,2,3,4].map(r => r*5+c));
+  lines.push([0,6,12,18,24]);
+  lines.push([4,8,12,16,20]);
+
+  return lines.filter(line => line.every(i => on[i])).length;
+}
+
+function renderResult(){
+  bingoGrid.innerHTML = "";
+  boardItems.forEach(item => {
+    const cell = document.createElement("div");
+    const active = item.bonus || selected.has(item.id);
+    cell.className = "cell" + (active ? " on" : "") + (item.bonus ? " bonus" : "");
+    cell.innerHTML = `<span class="mark">${active ? "✓" : ""}</span>${item.text}`;
+    bingoGrid.appendChild(cell);
+  });
+
+  const count = calculateBingo();
+  bingoCountEl.textContent = `${count} BINGO`;
+
+  if (count <= 1){
+    resultCopy.innerHTML = `🌱 <b>${count} BINGO</b><br><br>나의 컴플라이언스 실천을 확인했어요!<br><br>앞으로 더 다양한 실천에도 도전해 보세요 😊`;
+    eligibility.innerHTML = `<div class="not-eligible">이번 결과는 <b>${count} BINGO</b>입니다.<br>2 BINGO 이상부터 이벤트 추첨 대상이 됩니다.</div>`;
+    document.getElementById("submitActions").style.display = "none";
+    document.getElementById("mailInfo").style.display = "none";
+  } else if (count === 2){
+    document.getElementById("submitActions").style.display = "flex";
+    document.getElementById("mailInfo").style.display = "block";
+    resultCopy.innerHTML = `🎉 <b>2 BINGO</b><br><br><b>축하합니다! 이벤트 추첨 대상입니다 🎁</b><br><br>지금의 좋은 실천을 앞으로도 꾸준히 이어가 주세요!`;
+    eligibility.innerHTML = `<div class="eligible">🎁 <b>이벤트 추첨 대상입니다.</b><br>2 BINGO 달성 기준을 충족했습니다.</div>`;
+  } else {
+    document.getElementById("submitActions").style.display = "flex";
+    document.getElementById("mailInfo").style.display = "block";
+    resultCopy.innerHTML = `✨ <b>${count} BINGO 이상</b><br><br><b>멋져요! 이벤트 추첨 대상입니다 🎁</b><br><br>다양한 컴플라이언스 실천이 BINGO로 이어졌어요.<br><br>앞으로도 좋은 실천을 계속 이어가 주세요 😊`;
+    eligibility.innerHTML = `<div class="eligible">🎁 <b>이벤트 추첨 대상입니다.</b><br>${count} BINGO를 달성했습니다.</div>`;
+  }
+
+  resultCard.classList.add("show");
+  selectCard.style.display = "none";
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+resultBtn.addEventListener("click", () => {
+  if (selected.size !== 17) return;
+  const name = document.getElementById("name").value.trim();
+  const dept = document.getElementById("dept").value.trim();
+  if (!name || !dept) {
+    alert("결과 확인 전에 이름과 부서를 입력해 주세요.");
+    document.getElementById(!name ? "name" : "dept").focus();
+    return;
+  }
+  renderResult();
+});
+
+document.getElementById("mailBtn").addEventListener("click", () => {
+  const name = document.getElementById("name").value.trim();
+  const dept = document.getElementById("dept").value.trim();
+  const count = calculateBingo();
+
+  if (!name || !dept) {
+    alert("이름과 부서를 입력해 주세요.");
+    return;
+  }
+
+  if (count < 2) {
+    alert("2 BINGO 이상부터 이벤트 추첨 대상입니다.");
+    return;
+  }
+
+  if (!ADMIN_EMAIL || ADMIN_EMAIL === "YOUR_EMAIL@company.com") {
+    alert("운영자 이메일 주소가 아직 설정되지 않았습니다. HTML 파일의 ADMIN_EMAIL 값을 담당자 이메일로 바꿔 주세요.");
+    return;
+  }
+
+  const submittedAt = new Date();
+  const dateText = submittedAt.toLocaleString("ko-KR");
+
+  const subject = `[T&A COMPLIANCE BINGO] ${name} / ${dept} / ${count} BINGO`;
+  const body = [
+    "T&A COMPLIANCE BINGO 참여 결과입니다.",
+    "",
+    `이름 : ${name}`,
+    `부서 : ${dept}`,
+    `BINGO : ${count} BINGO`,
+    "추첨대상 : O (2 BINGO 이상)",
+    `참여일시 : ${dateText}`,
+    "",
+    "※ 본 메일은 COMPLIANCE BINGO 참여 인증을 위해 자동 작성되었습니다."
+  ].join("\n");
+
+  const mailto = `mailto:${encodeURIComponent(ADMIN_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  localStorage.setItem("tnaComplianceBingoSubmitted", JSON.stringify({
+    name,
+    department: dept,
+    bingoCount: count,
+    submittedAt: submittedAt.toISOString()
+  }));
+
+  document.getElementById("submitActions").style.display = "none";
+  document.getElementById("mailInfo").style.display = "none";
+  document.getElementById("submitComplete").style.display = "block";
+
+  window.location.href = mailto;
+});
+
+function showAlreadySubmitted(){
+  const saved = localStorage.getItem("tnaComplianceBingoSubmitted");
+  if (!saved) return false;
+  try {
+    const data = JSON.parse(saved);
+    document.querySelector(".hero").innerHTML = `
+      <div class="eyebrow">T&A · COMPLIANCE CAMPAIGN</div>
+      <h1>참여가 완료되었습니다</h1>
+      <p><b>${data.name || "참여자"}</b>님의 COMPLIANCE BINGO가 이미 제출되었습니다.<br>
+      이 브라우저에서는 다시 참여할 수 없습니다.</p>`;
+    document.querySelectorAll(".card").forEach(el => el.style.display = "none");
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+if (!showAlreadySubmitted()) update();
+</script>
+</body>
+</html>
