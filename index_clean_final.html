@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T&A COMPLIANCE BINGO</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--text:#18212f;--muted:#667085;--line:#dbe2ea;--primary:#1f6f5f;--soft:#eaf5f1;--blue:#274f7a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:18px 14px 48px}
+.hero{background:linear-gradient(135deg,var(--primary),var(--blue));color:#fff;border-radius:22px;padding:24px 20px;margin-bottom:14px}
+.hero h1{margin:6px 0 10px;font-size:28px;line-height:1.2}.hero p{margin:0;line-height:1.55}.eyebrow{font-size:12px;font-weight:800;opacity:.85;letter-spacing:.06em}
+.card{background:var(--card);border:1px solid #edf0f4;border-radius:20px;padding:18px;margin-top:14px;box-shadow:0 8px 25px rgba(24,33,47,.06)}
+h2{font-size:18px;margin:0 0 8px}.help{font-size:14px;color:var(--muted);line-height:1.5;margin:0 0 14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;font-size:15px}
+.counter{font-size:16px;font-weight:900;color:var(--primary);margin:10px 0}
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.item{border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;gap:9px;cursor:pointer;background:#fff;line-height:1.4;font-size:14px;font-weight:650}
+.item.selected{border-color:var(--primary);background:var(--soft)}.item.disabled{opacity:.45;cursor:not-allowed}
+.box{width:22px;height:22px;flex:none;border:2px solid #b8c2cc;border-radius:6px;display:grid;place-items:center;font-weight:900;color:#fff}
+.item.selected .box{background:var(--primary);border-color:var(--primary)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+button{border:0;border-radius:12px;padding:13px 16px;font-weight:850;font-size:15px;cursor:pointer}
+.primary{background:var(--primary);color:#fff;flex:1}.secondary{background:#eef2f6;color:#334155}
+button:disabled{opacity:.45;cursor:not-allowed}
+.result{display:none}.result.show{display:block}
+.result-head{text-align:center}.count{font-size:32px;font-weight:950;color:var(--primary);margin:10px 0 6px}.copy{font-size:15px;line-height:1.6;color:#4b5563}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:16px}
+.cell{aspect-ratio:1/1;border:1px solid var(--line);border-radius:9px;padding:5px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;line-height:1.2;font-weight:750;background:#f8fafc;overflow:hidden}
+.cell.on{background:var(--soft);border-color:var(--primary);color:#174c42}.cell.bonus{background:#fff7e6;border-color:#f3c96e;color:#815d11}
+.notice{margin-top:14px;padding:13px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;font-size:13px;line-height:1.55;color:#475569}
+.good{margin-top:14px;padding:13px;border-radius:12px;background:#ecfdf5;border:1px solid #bbf7d0;color:#166534;font-weight:800;line-height:1.5}
+.warn{margin-top:14px;padding:13px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-weight:800;line-height:1.5}
+.done{display:none;margin-top:14px;padding:15px;border-radius:12px;background:#ecfdf5;border:1px solid #bbf7d0;text-align:center;line-height:1.6}
+.testbadge{display:inline-block;margin-top:10px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px;font-weight:800}
+@media(max-width:680px){.fields,.checklist{grid-template-columns:1fr}.wrap{padding:12px 10px 36px}.hero{padding:20px 16px}.hero h1{font-size:24px}.card{padding:14px}.cell{font-size:8.5px;padding:3px}.grid{gap:4px}.count{font-size:29px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">T&A · COMPLIANCE CAMPAIGN</div>
+    <h1>나의 COMPLIANCE 실천력은?</h1>
+    <p>평소 업무에서 내가 잘 실천하고 있다고 생각하는 <b>17가지</b>를 선택해 주세요.<br>선택을 완료하면 숨겨져 있던 BINGO 결과가 공개됩니다.</p>
+    <div id="testBadge" class="testbadge" style="display:none">TEST MODE · 재참여 제한 없이 확인 중</div>
+  </section>
+
+  <section class="card" id="participantCard">
+    <h2>참여 정보</h2>
+    <div class="fields">
+      <div class="field"><label for="name">이름</label><input id="name" placeholder="이름 입력"></div>
+      <div class="field"><label for="dept">부서</label><input id="dept" placeholder="부서 입력"></div>
+    </div>
+  </section>
+
+  <section class="card" id="selectCard">
+    <h2>실천항목 선택</h2>
+    <p class="help">아래 24개 중 <b>정확히 17개</b>를 선택해 주세요. 빙고판 위치는 결과 확인 전까지 공개되지 않습니다.</p>
+    <div class="counter"><span id="count">0</span> / 17 선택</div>
+    <div class="checklist" id="checklist"></div>
+    <div class="actions"><button class="primary" id="resultBtn" disabled>나의 BINGO 결과 확인하기</button></div>
+  </section>
+
+  <section class="card result" id="resultCard">
+    <div class="result-head">
+      <div class="count" id="bingoCount">0 BINGO</div>
+      <div class="copy" id="resultCopy"></div>
+    </div>
+    <div class="grid" id="bingoGrid"></div>
+    <div id="eligibility"></div>
+    <div class="notice">
+      📱 <b>최종 BINGO 결과 화면을 캡처해서 보관해 주세요.</b><br>
+      🎁 <b>2 BINGO 이상이면 이벤트 추첨에 참여할 수 있습니다.</b><br>
+      💬 참여정보를 복사한 뒤 카카오톡 채널 채팅창에 붙여넣어 전송해 주세요.
+    </div>
+    <div class="actions" id="submitActions">
+      <button class="primary" id="copyBtn">📋 참여결과 + 선택항목 복사하기</button>
+      <button class="secondary" id="kakaoBtn">💬 카카오톡 채널 열기</button>
+    </div>
+    <div class="done" id="copyDone">✅ 참여정보가 복사되었습니다!<br>카카오톡 채널 채팅창에 붙여넣고 전송해 주세요.</div>
+  </section>
+
+  <section class="card" id="alreadyCard" style="display:none;text-align:center">
+    <h2>참여가 완료되었습니다</h2>
+    <p class="help" style="margin-bottom:0">이 브라우저에서는 다시 참여할 수 없습니다.</p>
+  </section>
+</div>
+
+<script>
+const KAKAO_CHANNEL_URL = "https://pf.kakao.com/_SNiSG";
+const MAX_SELECT = 17;
+const TEST_MODE = new URLSearchParams(location.search).get("test") === "1";
+const STORAGE_KEY = "tnaComplianceBingoSubmitted_final_v2";
+
+const boardItems = [
+{id:"mail",text:"📧 메일 발송 전 수신자·첨부파일 확인"},
+{id:"partner",text:"🤝 협력사와 공정하게 소통"},
+{id:"lock",text:"🔒 자리 비울 때 화면 잠금"},
+{id:"gift",text:"🎁 금품·선물·접대 전 관련 기준 확인"},
+{id:"copyright",text:"📸 이미지·영상 사용 전 저작권 확인"},
+{id:"safety",text:"🦺 현장에서 안전수칙 준수"},
+{id:"external",text:"📤 외부 공유 전 보안 여부 확인"},
+{id:"contract",text:"📝 계약·발주 시 정해진 절차 준수"},
+{id:"ai",text:"🤖 생성형 AI에 회사 기밀정보 입력 금지"},
+{id:"privacy",text:"👤 개인정보는 필요한 범위에서만 사용"},
+{id:"conflict",text:"⚖️ 이해관계 발생 시 먼저 알리기"},
+{id:"expense",text:"💳 비용 처리 시 증빙·사용목적 확인"},
+{id:"bonus",text:"⭐ 오늘도 준법! BONUS",bonus:true},
+{id:"password",text:"🔑 ID·비밀번호 타인과 공유 금지"},
+{id:"respect",text:"💬 동료·협력사에게 존중하는 언어 사용"},
+{id:"personal",text:"📁 업무자료 개인 계정에 저장하지 않기"},
+{id:"approval",text:"✅ 필요한 업무는 사전승인 후 진행"},
+{id:"phishing",text:"🔗 의심스러운 메일·링크 열지 않기"},
+{id:"asset",text:"🏢 회사 자산은 업무 목적에 맞게 사용"},
+{id:"record",text:"📑 중요 업무 결정·협의는 기록 남기기"},
+{id:"improper",text:"🙅 부당한 요청에 원칙대로 대응"},
+{id:"guide",text:"🔍 업무가 애매하면 규정·가이드 확인"},
+{id:"secure",text:"🔐 중요 문서·자료 방치하지 않기"},
+{id:"speak",text:"👀 위반 가능성을 그냥 지나치지 않기"},
+{id:"report",text:"📢 필요 시 제보·상담채널 활용"}
+];
+
+const listOrder=["expense","phishing","partner","copyright","guide","lock","approval","privacy","safety","record","gift","personal","contract","respect","external","password","mail","ai","asset","conflict","secure","report","improper","speak"];
+const byId=Object.fromEntries(boardItems.map(x=>[x.id,x]));
+const selected=new Set();
+
+const $=id=>document.getElementById(id);
+const checklist=$("checklist"), resultBtn=$("resultBtn");
+
+function renderChecklist(){
+  checklist.innerHTML="";
+  listOrder.forEach(id=>{
+    const item=byId[id];
+    const el=document.createElement("div");
+    const isOn=selected.has(id);
+    el.className="item"+(isOn?" selected":"")+((selected.size>=MAX_SELECT&&!isOn)?" disabled":"");
+    el.innerHTML=`<div class="box">${isOn?"✓":""}</div><div>${item.text}</div>`;
+    el.onclick=()=>{
+      if(selected.has(id)) selected.delete(id);
+      else if(selected.size<MAX_SELECT) selected.add(id);
+      update();
+    };
+    checklist.appendChild(el);
+  });
+}
+
+function update(){
+  $("count").textContent=selected.size;
+  resultBtn.disabled=selected.size!==MAX_SELECT;
+  renderChecklist();
+}
+
+function bingoCount(){
+  const on=boardItems.map(x=>x.bonus||selected.has(x.id));
+  const lines=[];
+  for(let r=0;r<5;r++) lines.push([0,1,2,3,4].map(c=>r*5+c));
+  for(let c=0;c<5;c++) lines.push([0,1,2,3,4].map(r=>r*5+c));
+  lines.push([0,6,12,18,24],[4,8,12,16,20]);
+  return lines.filter(line=>line.every(i=>on[i])).length;
+}
+
+function renderResult(){
+  $("bingoGrid").innerHTML="";
+  boardItems.forEach(item=>{
+    const active=item.bonus||selected.has(item.id);
+    const c=document.createElement("div");
+    c.className="cell"+(active?" on":"")+(item.bonus?" bonus":"");
+    c.textContent=(active?"✓ ":"")+item.text;
+    $("bingoGrid").appendChild(c);
+  });
+  const n=bingoCount();
+  $("bingoCount").textContent=`${n} BINGO`;
+  if(n<=1){
+    $("resultCopy").innerHTML=`🌱 <b>${n} BINGO</b><br><br>나의 컴플라이언스 실천을 확인했어요!<br><br>앞으로 더 다양한 실천에도 도전해 보세요 😊`;
+    $("eligibility").innerHTML=`<div class="warn">이번 결과는 <b>${n} BINGO</b>입니다.<br>2 BINGO 이상부터 이벤트 추첨 대상이 됩니다.</div>`;
+    $("submitActions").style.display="none";
+  }else if(n===2){
+    $("resultCopy").innerHTML=`🎉 <b>2 BINGO</b><br><br><b>축하합니다! 이벤트 추첨 대상입니다 🎁</b><br><br>지금의 좋은 실천을 앞으로도 꾸준히 이어가 주세요!`;
+    $("eligibility").innerHTML=`<div class="good">🎁 이벤트 추첨 대상입니다.</div>`;
+    $("submitActions").style.display="flex";
+  }else{
+    $("resultCopy").innerHTML=`✨ <b>${n} BINGO</b><br><br><b>멋져요! 이벤트 추첨 대상입니다 🎁</b><br><br>다양한 컴플라이언스 실천이 BINGO로 이어졌어요.<br><br>앞으로도 좋은 실천을 계속 이어가 주세요 😊`;
+    $("eligibility").innerHTML=`<div class="good">🎁 이벤트 추첨 대상입니다.</div>`;
+    $("submitActions").style.display="flex";
+  }
+  $("participantCard").style.display="none";
+  $("selectCard").style.display="none";
+  $("resultCard").classList.add("show");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+resultBtn.onclick=()=>{
+  if(selected.size!==MAX_SELECT) return;
+  const name=$("name").value.trim(), dept=$("dept").value.trim();
+  if(!name||!dept){alert("이름과 부서를 입력해 주세요.");(!name?$("name"):$("dept")).focus();return;}
+  renderResult();
+};
+
+$("copyBtn").onclick=async()=>{
+  const n=bingoCount();
+  if(n<2) return;
+  const selectedTexts=boardItems.filter(x=>!x.bonus&&selected.has(x.id)).map(x=>x.text.replace(/^\S+\s*/,""));
+  const text=[
+    "[T&A COMPLIANCE BINGO 참여]","",
+    `이름 : ${$("name").value.trim()}`,
+    `부서 : ${$("dept").value.trim()}`,
+    `BINGO : ${n} BINGO`,
+    "추첨대상 : O (2 BINGO 이상)",
+    `참여일시 : ${new Date().toLocaleString("ko-KR")}`,"",
+    "[선택한 실천항목 17개]",
+    ...selectedTexts.map((t,i)=>`${i+1}. ${t}`)
+  ].join("\n");
+  try{await navigator.clipboard.writeText(text);}
+  catch(e){
+    const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+  }
+  $("copyDone").style.display="block";
+};
+
+$("kakaoBtn").onclick=()=>{
+  const n=bingoCount(); if(n<2) return;
+  if(!TEST_MODE){
+    localStorage.setItem(STORAGE_KEY,JSON.stringify({name:$("name").value.trim(),dept:$("dept").value.trim(),bingo:n,time:new Date().toISOString()}));
+  }
+  window.open(KAKAO_CHANNEL_URL,"_blank");
+};
+
+function init(){
+  if(TEST_MODE) $("testBadge").style.display="inline-block";
+  if(!TEST_MODE && localStorage.getItem(STORAGE_KEY)){
+    $("participantCard").style.display="none";
+    $("selectCard").style.display="none";
+    $("alreadyCard").style.display="block";
+    return;
+  }
+  update();
+}
+init();
+</script>
+</body>
+</html>
